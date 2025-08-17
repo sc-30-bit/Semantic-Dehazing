@@ -122,10 +122,10 @@ class RW2AH_Dataset(data.Dataset):
         # Apply augmentations
         if self.train:
             haze, clear, weight_mask, binary_mask = self.augData(haze, clear, weight_mask, binary_mask)
+            return haze, clear, weight_mask, binary_mask
         else:
             haze, clear = self.augTest(haze, clear)
             return haze, clear
-        return haze, clear, weight_mask, binary_mask
     
     def augData(self, data, target, weight_mask, binary_mask):
         if self.train:
