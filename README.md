@@ -6,4 +6,4 @@
 python main.py --net='ffa' --crop --crop_size=240 --blocks=19 --gps=3 --bs=2 --lr=0.0001 --trainset='rw2ah_train' --testset='rw2ah_test' --steps=60000 --eval_step=150 (--ssim_loss --ssim_loss_type='region')
  ```
 
-<img src="fig/ExperimentOne.png" alt="结果表格" style="max-width:100%; height:auto;">
+<img src="fig/results.png" alt="结果表格" style="max-width:100%; height:auto;">
