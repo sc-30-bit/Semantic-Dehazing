@@ -18,6 +18,28 @@ from torchvision.models import vgg16
 print('log_dir :',log_dir)
 print('model_name:',model_name)
 
+# 1) 新增：CSV 日志相关
+import csv
+from datetime import datetime
+
+# CSV 日志文件路径
+LOG_CSV = os.path.join(log_dir, 'csv', 'model_saves.csv')
+
+def log_model_save_csv(step, max_psnr, max_ssim, log_file=LOG_CSV):
+    # 确保日志目录存在
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+    exists = os.path.exists(log_file)
+    with open(log_file, 'a', newline='') as f:
+        writer = csv.writer(f)
+        if not exists:
+            writer.writerow(['timestamp', 'step', 'max_psnr', 'max_ssim'])
+        writer.writerow([
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            int(step),
+            float(max_psnr),
+            float(max_ssim)
+        ])
+
 models_={
 	'ffa':FFA(gps=opt.gps,blocks=opt.blocks),
 }
@@ -42,7 +64,7 @@ def train(net,loader_train,loader_test,optim,criterion):
 	lpips_list = [] if opt.lpips_eval else None
 	if opt.resume and os.path.exists(opt.model_dir):
 		print(f'resume from {opt.model_dir}')
-		ckp=torch.load(opt.model_dir)
+		ckp=torch.load(opt.model_dir,map_location=opt.device,weights_only=False)
 		losses=ckp['losses']
 		net.load_state_dict(ckp['model'])
 		start_step=ckp['step']
@@ -83,8 +105,14 @@ def train(net,loader_train,loader_test,optim,criterion):
 			loss = criterion[1](out, y)
 		else:
 			# 计算单尺度损失
-			loss=criterion[0](out,y)* weight_mask
-			#loss=criterion[0](out,y)
+			if opt.skyl1:
+				# 使用加权L1损失
+				loss = criterion[0](out, y) * weight_mask
+				#print("Using weighted L1 loss with weight mask.")
+			else:
+				# 使用普通L1损失
+				loss = criterion[0](out, y)
+				#print("Using standard L1 loss without weight mask.")
 			loss=loss.mean()  # Average loss over the batch
 			ssim_loss = 0
 		
@@ -164,7 +192,7 @@ def train(net,loader_train,loader_test,optim,criterion):
 								'losses':losses,
 								'model':net.state_dict(),
 						},opt.model_dir)
-					print(f'\n model saved at step :{step}| max_psnr:{max_psnr:.4f}|max_ssim:{max_ssim:.4f}')
+					print(f'\n model saved at step :{step}| max_psnr:{max_psnr:.4f}|max_ssim:{max_ssim:.4f}|min_lpips:{min_lpips:.4f}')
 			elif val_ssim > max_ssim and val_psnr > max_psnr :
 				max_ssim=max(max_ssim,val_ssim)
 				max_psnr=max(max_psnr,val_psnr)
@@ -177,6 +205,8 @@ def train(net,loader_train,loader_test,optim,criterion):
 							'losses':losses,
 							'model':net.state_dict()
 				},opt.model_dir)
+				#save max log
+				log_model_save_csv(step, max_psnr, max_ssim)
 				print(f'\n model saved at step :{step}| max_psnr:{max_psnr:.4f}|max_ssim:{max_ssim:.4f}')
 			print(f'\nstep :{step} |max_psnr :{max_psnr:.4f}|max_ssim:{max_ssim:.4f}')
 

@@ -221,7 +221,7 @@ class RW2AH_Dataset(data.Dataset):
 import os
 pwd=os.getcwd()
 print(pwd)
-path='/home/klay/papersToReproduce/datasets/RW2AH'#path to your 'data' folder
+path='/kaggle/input/real-scene-subset/home/klay/dehazing_research/materials/testing/RW2AH' #path to your 'data' folder
 
 RW2AH_train_loader=DataLoader(dataset=RW2AH_Dataset(path+'/train',train=True,size=crop_size),batch_size=BS,shuffle=True)
 RW2AH_test_loader=DataLoader(dataset=RW2AH_Dataset(path+'/test',train=False,size='whole img'),batch_size=1,shuffle=False)

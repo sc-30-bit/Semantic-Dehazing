@@ -29,6 +29,8 @@ parser.add_argument('--perloss',action='store_true',help='perceptual loss')#acti
 # 添加SSIM损失参数（可选是否使用SSIM损失，以及SSIM损失的类型：全局或局部或不使用）
 parser.add_argument('--ssim_loss', action='store_true', help='use ssim loss')
 parser.add_argument('--ssim_loss_type', type=str, default='none', choices=['none', 'global', 'region'], help='ssim loss type: none, global, or region')
+# 可选L1Loss，sky or not
+parser.add_argument('--skyl1', action='store_true', help='use skyl1 loss')
 # 添加LPIPS参数
 parser.add_argument('--lpips_eval', action='store_true', help='evaluate using LPIPS')
 parser.add_argument('--lpips_net', type=str, default='vgg', choices=['alex', 'vgg', 'squeeze'], help='LPIPS network type')
