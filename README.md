@@ -35,23 +35,23 @@ python main.py --net='ffa' --crop --crop_size=240 --blocks=19 --gps=3 --bs=2 --l
 1) **Per-pixel L1 (reduction='none') then mean**  
 - l1_map = |ŷ - y|  // [B, C, H, W]  
 
-1) **3x3 smoothing of weight_mask (padding to keep size)**  
+2) **3x3 smoothing of weight_mask (padding to keep size)**  
 - weight_mask_smooth = AvgPool2d(weight_mask, kernel_size=3, stride=1, padding=1)  // [B, 1, H, W]
 
-1) **Sky-weighted L1 loss**  
+3) **Sky-weighted L1 loss**  
 - sky_l1_map = l1_map * weight_mask_smooth  // [B, 1, H, W]  
 - sky_l1_loss = mean(sky_l1_map)  // scalar
 
-1) **Region SSIM loss**  
+4) **Region SSIM loss**  
 - masked_ŷ = ŷ * binary_mask  
 - masked_y  = y * binary_mask  
 - ssim_val = ssim_fn(masked_ŷ, masked_y)  // per-image values  
 - region_ssim_loss = 1.0 - mean(ssim_val)  // scalar
 
-1) **Total loss**  
+5) **Total loss**  
 - loss = sky_l1_loss + 0.5 * region_ssim_loss
 
-1) **Backpropagation**  
+6) **Backpropagation**  
 - loss.backward()
 
 ---
