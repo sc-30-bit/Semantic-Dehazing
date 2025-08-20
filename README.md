@@ -8,7 +8,10 @@ python main.py --net='ffa' --crop --crop_size=240 --blocks=19 --gps=3 --bs=2 --l
 
 <img src="fig/Region-Aware-Loss.png" alt="结果表格" style="max-width:100%; height:auto;">
 
-![PSNR](fig/PSNR_Curve.png) ![SSIM](fig/SSIM_Curve.png)
+| PSNR | SSIM |
+|---:|---:|
+| ![PSNR](fig/PSNR_Curve.png) | ![SSIM](fig/SSIM_Curve.png) |
+
 
 **Algorithm: Sky-weighted L1 + Region SSIM Loss**
 
